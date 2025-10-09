@@ -56,7 +56,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # pnpm config set store-dir ~/.pnpm-store
+          pnpm config set store-dir ~/.pnpm-store
           pnpm install --frozen-lockfile
 
       - name: Cache Next.js build cache
