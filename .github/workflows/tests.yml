@@ -23,30 +23,26 @@ jobs:
         uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
+        with:
+          version: 10.8.0
 
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".node-version"
-          cache: "pnpm"
 
-      - name: Get pnpm store directory
-        id: pnpm-store
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache pnpm store
+      - name: Cache pnpm dependencies
         uses: actions/cache@v4
         with:
-          path: ${{ env.PNPM_STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: |
+            ~/.pnpm-store
+            node_modules
+            **/node_modules
+          key: pnpm-deps-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            pnpm-deps-${{ runner.os }}-
 
       - name: Install dependencies
-        run: |
-          pnpm config set store-dir ${{ env.PNPM_STORE_PATH }}
-          pnpm install --frozen-lockfile --prefer-offline
+        run: pnpm install --frozen-lockfile
 
       - name: Build Packages
         run: pnpm run-on-packages build
